@@ -45,15 +45,17 @@ type API struct {
 	app             *app.App
 	authService     string
 	singleUserToken string
+	allowUsers      bool
 	MattermostAuth  bool
 	logger          *mlog.Logger
 	audit           *audit.Audit
 }
 
-func NewAPI(app *app.App, singleUserToken string, authService string, logger *mlog.Logger, audit *audit.Audit) *API {
+func NewAPI(app *app.App, singleUserToken string, allowUsers bool, authService string, logger *mlog.Logger, audit *audit.Audit) *API {
 	return &API{
 		app:             app,
 		singleUserToken: singleUserToken,
+		allowUsers:      allowUsers,
 		authService:     authService,
 		logger:          logger,
 		audit:           audit,

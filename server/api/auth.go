@@ -164,7 +164,7 @@ func (a *API) handleLogin(w http.ResponseWriter, r *http.Request) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 
-	if len(a.singleUserToken) > 0 {
+	if !a.allowUsers && len(a.singleUserToken) > 0 {
 		// Not permitted in single-user mode
 		a.errorResponse(w, http.StatusUnauthorized, "", nil)
 		return
@@ -233,7 +233,7 @@ func (a *API) handleRegister(w http.ResponseWriter, r *http.Request) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 
-	if len(a.singleUserToken) > 0 {
+	if !a.allowUsers && len(a.singleUserToken) > 0 {
 		// Not permitted in single-user mode
 		a.errorResponse(w, http.StatusUnauthorized, "", nil)
 		return
@@ -330,7 +330,7 @@ func (a *API) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 
-	if len(a.singleUserToken) > 0 {
+	if !a.allowUsers && len(a.singleUserToken) > 0 {
 		// Not permitted in single-user mode
 		a.errorResponse(w, http.StatusUnauthorized, "", nil)
 		return
@@ -376,26 +376,28 @@ func (a *API) attachSession(handler func(w http.ResponseWriter, r *http.Request)
 	return func(w http.ResponseWriter, r *http.Request) {
 		token, _ := auth.ParseAuthTokenFromRequest(r)
 
-		a.logger.Debug(`attachSession`, mlog.Bool("single_user", len(a.singleUserToken) > 0))
+		a.logger.Debug(`attachSession`, mlog.Bool("single_user", len(a.singleUserToken) > 0), mlog.Bool("allow_users", a.allowUsers))
 		if len(a.singleUserToken) > 0 {
-			if required && (token != a.singleUserToken) {
-				a.errorResponse(w, http.StatusUnauthorized, "", nil)
+			if !required || (token == a.singleUserToken) {
+				now := time.Now().Unix()
+				session := &model.Session{
+					ID:          SingleUser,
+					Token:       token,
+					UserID:      SingleUser,
+					AuthService: a.authService,
+					Props:       map[string]interface{}{},
+					CreateAt:    now,
+					UpdateAt:    now,
+				}
+				ctx := context.WithValue(r.Context(), sessionContextKey, session)
+				handler(w, r.WithContext(ctx))
 				return
 			}
 
-			now := time.Now().Unix()
-			session := &model.Session{
-				ID:          SingleUser,
-				Token:       token,
-				UserID:      SingleUser,
-				AuthService: a.authService,
-				Props:       map[string]interface{}{},
-				CreateAt:    now,
-				UpdateAt:    now,
+			if !a.allowUsers {
+				a.errorResponse(w, http.StatusUnauthorized, "", nil)
+				return
 			}
-			ctx := context.WithValue(r.Context(), sessionContextKey, session)
-			handler(w, r.WithContext(ctx))
-			return
 		}
 
 		if a.MattermostAuth && r.Header.Get("Mattermost-User-Id") != "" {

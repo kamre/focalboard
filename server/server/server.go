@@ -119,7 +119,7 @@ func New(cfg *config.Configuration, singleUserToken string, db store.Store, logg
 	}
 	app := app.New(cfg, wsServer, appServices)
 
-	focalboardAPI := api.NewAPI(app, singleUserToken, cfg.AuthMode, logger, auditService)
+	focalboardAPI := api.NewAPI(app, singleUserToken, cfg.AllowUsers, cfg.AuthMode, logger, auditService)
 
 	// Local router for admin APIs
 	localRouter := mux.NewRouter()

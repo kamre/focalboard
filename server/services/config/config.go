@@ -45,6 +45,7 @@ type Configuration struct {
 	SessionRefreshTime      int64          `json:"session_refresh_time" mapstructure:"session_refresh_time"`
 	LocalOnly               bool           `json:"localonly" mapstructure:"localonly"`
 	EnableLocalMode         bool           `json:"enableLocalMode" mapstructure:"enableLocalMode"`
+	AllowUsers              bool           `json:"allowUsers" mapstructure:"allowUsers"`
 	LocalModeSocketLocation string         `json:"localModeSocketLocation" mapstructure:"localModeSocketLocation"`
 
 	AuthMode string `json:"authMode" mapstructure:"authMode"`
