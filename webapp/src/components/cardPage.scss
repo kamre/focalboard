@@ -1,0 +1,20 @@
+.CardPage {
+    overflow: auto;
+
+    .content {
+        padding: 20px 15%;
+    }
+
+    .CardPageToolbar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px;
+    }
+
+    .CardPageToolbar-RightSide {
+        display: flex;
+        gap: 8px;
+    }
+}

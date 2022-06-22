@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {generatePath, useRouteMatch, useHistory} from 'react-router-dom'
 import {FormattedMessage} from 'react-intl'
 
@@ -27,6 +27,7 @@ import BoardTemplateSelector from './boardTemplateSelector/boardTemplateSelector
 
 import Sidebar from './sidebar/sidebar'
 import './workspace.scss'
+import CardPage from './cardPage'
 
 type Props = {
     readonly: boolean
@@ -77,6 +78,22 @@ function CenterContent(props: Props) {
             wsClient.removeOnConfigChange(onConfigChangeHandler)
         }
     }, [cardLimitTimestamp, match.params.boardId, templates])
+
+    const query = useMemo(() => new URLSearchParams(history.location.search), [history.location])
+    if (match.params.cardId && query.has('fullscreen')) {
+        return (
+            <CardPage
+                board={board}
+                cards={cards}
+                cardId={match.params.cardId}
+                activeView={activeView}
+                views={views}
+                showCard={showCard}
+                onClose={() => showCard(undefined)}
+                readonly={props.readonly}
+            />
+        )
+    }
 
     if (board && activeView) {
         let property = groupByProperty

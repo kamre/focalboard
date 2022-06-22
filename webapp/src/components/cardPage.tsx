@@ -1,0 +1,141 @@
+import React, {useCallback, useState} from 'react'
+import {generatePath, Link, useHistory, useRouteMatch} from 'react-router-dom'
+
+import {Board} from '../blocks/board'
+import {BoardView} from '../blocks/boardView'
+import {Card} from '../blocks/card'
+import {useAppSelector} from '../store/hooks'
+import {getCard} from '../store/cards'
+import {getCardContents} from '../store/contents'
+import {getCardComments} from '../store/comments'
+
+
+import './cardPage.scss'
+import IconButton from '../widgets/buttons/iconButton'
+import ArrowCollapse from '../widgets/icons/arrowCollapse.'
+
+import OptionsIcon from '../widgets/icons/options'
+import MenuWrapper from '../widgets/menuWrapper'
+
+import CardContent from './cardContent'
+import CardActionsMenu from './cardActionsMenu'
+import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from './confirmationDialogBox'
+import RootPortal from './rootPortal'
+
+type ToolbarProps = {
+    board: Board
+    activeView: BoardView
+    card?: Card
+    onClose: () => void
+    showCard: (cardId?: string) => void
+    showConfirmationDialog: (props: ConfirmationDialogBoxProps) => void
+}
+
+const CardPageToolbar = (props: ToolbarProps): JSX.Element | null => {
+    const {board, activeView, card} = props
+    const match = useRouteMatch<{boardId: string, viewId: string, cardId?: string}>()
+    const history = useHistory()
+
+    const onCollapse = useCallback(() => {
+        const newLocation = {
+            ...history.location,
+            search: ''
+        }
+        history.push(newLocation)
+    }, [history])
+
+    if (!card) return null
+
+    const {boardId} = match.params
+
+    return (
+        <div className='CardPageToolbar'>
+            <div className='CardPageToolbar-LeftSide'>
+                <Link to={generatePath(match.path, { boardId })}>
+                    {`${board.icon} ${board.title}`}
+                </Link>
+                {` / ${card.title}`}
+            </div>
+            <div className='CardPageToolbar-RightSide'>
+                <IconButton
+                    icon={<ArrowCollapse/>}
+                    size='medium'
+                    onClick={onCollapse}
+                />
+                <MenuWrapper>
+                    <IconButton
+                        size='medium'
+                        icon={<OptionsIcon/>}
+                    />
+                    <CardActionsMenu
+                        board={board}
+                        activeView={activeView}
+                        card={card}
+                        showCard={props.showCard}
+                        showConfirmationDialog={props.showConfirmationDialog}
+                        onClose={props.onClose}
+                    />
+                </MenuWrapper>
+            </div>
+        </div>
+    )
+}
+
+type Props = {
+    board: Board
+    activeView: BoardView
+    views: BoardView[]
+    cards: Card[]
+    cardId: string
+    onClose: () => void
+    showCard: (cardId?: string) => void
+    readonly: boolean
+}
+
+const CardPage = (props: Props): JSX.Element => {
+    const {board, activeView, cards, views, readonly, cardId} = props
+    const card = useAppSelector(getCard(cardId))
+    const contents = useAppSelector(getCardContents(cardId))
+    const comments = useAppSelector(getCardComments(cardId))
+    const isTemplate = card && card.fields.isTemplate
+    const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false)
+    const [confirmationDialogProps, setConfirmationDialogProps] = useState<ConfirmationDialogBoxProps>()
+
+    const showConfirmationDialog = (dialogProps: ConfirmationDialogBoxProps) => {
+        setConfirmationDialogProps({
+            ...dialogProps,
+            onClose: () => setConfirmationDialogVisible(false)
+        })
+        setConfirmationDialogVisible(true)
+    }
+
+    return (
+        <div className='CardPage'>
+            <CardPageToolbar
+                board={board}
+                activeView={activeView}
+                card={card}
+                showCard={props.showCard}
+                onClose={props.onClose}
+                showConfirmationDialog={showConfirmationDialog}
+            />
+            <CardContent
+                board={board}
+                activeView={activeView}
+                views={views}
+                cards={cards}
+                card={card}
+                comments={comments}
+                contents={contents}
+                readonly={readonly}
+                isTemplate={isTemplate}
+            />
+            {confirmationDialogVisible && confirmationDialogProps &&
+                <RootPortal>
+                    <ConfirmationDialogBox dialogBox={confirmationDialogProps}/>
+                </RootPortal>}
+        </div>
+    )
+}
+
+export default React.memo(CardPage)

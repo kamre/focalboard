@@ -5,11 +5,11 @@ import React from 'react'
 
 import CompassIcon from './compassIcon'
 
-export default function OptionsIcon(): JSX.Element {
+export default function ArrowCollapse(): JSX.Element {
     return (
         <CompassIcon
-            icon='dots-horizontal'
-            className='OptionsIcon'
+            icon='arrow-collapse'
+            className='ArrowCollapseIcon'
         />
     )
 }
