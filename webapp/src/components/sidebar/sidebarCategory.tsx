@@ -66,10 +66,10 @@ const SidebarCategory = (props: Props) => {
 
     const showView = useCallback((viewId, boardId) => {
         // if the same board, reuse the match params
-        // otherwise remove viewId and cardId, results in first view being selected
-        const params = {...match.params, boardId: boardId || '', viewId: viewId || ''}
-        if (boardId !== match.params.boardId && viewId !== match.params.viewId) {
-            params.cardId = undefined
+        // otherwise remove viewId, results in first view being selected
+        const params = {...match.params, boardId: boardId || '', viewId: viewId || '', cardId: undefined}
+        if (boardId !== match.params.boardId) {
+            params.viewId = undefined
         }
         const newPath = generatePath(match.path, params)
         history.push(newPath)
