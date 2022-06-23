@@ -40,7 +40,7 @@ function addContentMenu(intl: IntlShape, type: BlockTypes): JSX.Element {
 const CardDetailContentsMenu = () => {
     const intl = useIntl()
     return (
-        <div className='CardDetailContentsMenu content add-content'>
+        <div className='CardDetailContentsMenu add-content'>
             <MenuWrapper>
                 <Button>
                     <FormattedMessage
