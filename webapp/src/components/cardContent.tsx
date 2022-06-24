@@ -8,7 +8,7 @@ import {Card} from '../blocks/card'
 import {CommentBlock} from '../blocks/commentBlock'
 import {ContentBlock} from '../blocks/contentBlock'
 
-import CardDetail from './cardDetail/cardDetail'
+import CardDetail, {CardDetailOptions} from './cardDetail/cardDetail'
 
 type Props = {
     board: Board
@@ -18,12 +18,13 @@ type Props = {
     card?: Card
     comments: CommentBlock[]
     contents: Array<ContentBlock|ContentBlock[]>
+    options: CardDetailOptions
     readonly: boolean
     isTemplate?: boolean
 }
 
 const CardContent = (props: Props): JSX.Element => {
-    const {board, activeView, views, cards, card, comments, contents, readonly, isTemplate} = props
+    const {board, activeView, views, cards, card, comments, contents, isTemplate} = props
     return (
         <>
             {isTemplate &&
@@ -43,7 +44,8 @@ const CardContent = (props: Props): JSX.Element => {
                     card={card}
                     contents={contents}
                     comments={comments}
-                    readonly={readonly}
+                    options={props.options}
+                    readonly={props.readonly}
                 />}
 
             {!card &&

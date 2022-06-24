@@ -8,12 +8,8 @@ import {useAppSelector} from '../store/hooks'
 import {getCard} from '../store/cards'
 import {getCardContents} from '../store/contents'
 import {getCardComments} from '../store/comments'
-
-
-import './cardPage.scss'
 import IconButton from '../widgets/buttons/iconButton'
 import ArrowCollapse from '../widgets/icons/arrowCollapse.'
-
 import OptionsIcon from '../widgets/icons/options'
 import MenuWrapper from '../widgets/menuWrapper'
 
@@ -21,18 +17,23 @@ import CardContent from './cardContent'
 import CardActionsMenu from './cardActionsMenu'
 import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from './confirmationDialogBox'
 import RootPortal from './rootPortal'
+import {CardDetailOptions, useCardDetailOptions} from './cardDetail/cardDetail'
+
+import './cardPage.scss'
 
 type ToolbarProps = {
     board: Board
     activeView: BoardView
     card?: Card
+    cardOptions: CardDetailOptions
+    updateCardOptions: (options: CardDetailOptions) => void
     onClose: () => void
     showCard: (cardId?: string) => void
     showConfirmationDialog: (props: ConfirmationDialogBoxProps) => void
 }
 
 const CardPageToolbar = (props: ToolbarProps): JSX.Element | null => {
-    const {board, activeView, card} = props
+    const {board, activeView, card, cardOptions} = props
     const match = useRouteMatch<{boardId: string, viewId: string, cardId?: string}>()
     const history = useHistory()
 
@@ -71,8 +72,10 @@ const CardPageToolbar = (props: ToolbarProps): JSX.Element | null => {
                         board={board}
                         activeView={activeView}
                         card={card}
+                        cardOptions={cardOptions}
                         showCard={props.showCard}
                         showConfirmationDialog={props.showConfirmationDialog}
+                        updateCardOptions={props.updateCardOptions}
                         onClose={props.onClose}
                     />
                 </MenuWrapper>
@@ -100,6 +103,7 @@ const CardPage = (props: Props): JSX.Element => {
     const isTemplate = card && card.fields.isTemplate
     const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false)
     const [confirmationDialogProps, setConfirmationDialogProps] = useState<ConfirmationDialogBoxProps>()
+    const [cardOptions, updateCardOptions] = useCardDetailOptions(board.id)
 
     const showConfirmationDialog = (dialogProps: ConfirmationDialogBoxProps) => {
         setConfirmationDialogProps({
@@ -115,9 +119,11 @@ const CardPage = (props: Props): JSX.Element => {
                 board={board}
                 activeView={activeView}
                 card={card}
+                cardOptions={cardOptions}
                 showCard={props.showCard}
                 onClose={props.onClose}
                 showConfirmationDialog={showConfirmationDialog}
+                updateCardOptions={updateCardOptions}
             />
             <CardContent
                 board={board}
@@ -127,6 +133,7 @@ const CardPage = (props: Props): JSX.Element => {
                 card={card}
                 comments={comments}
                 contents={contents}
+                options={cardOptions}
                 readonly={readonly}
                 isTemplate={isTemplate}
             />

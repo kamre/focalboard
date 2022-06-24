@@ -19,18 +19,21 @@ import {getMe} from '../store/users'
 import {sendFlashMessage} from './flashMessages'
 import BoardPermissionGate from './permissions/boardPermissionGate'
 import {ConfirmationDialogBoxProps} from './confirmationDialogBox'
+import {CardDetailOptions} from './cardDetail/cardDetail'
 
 type Props = {
     board: Board
     activeView: BoardView
     card: Card
+    cardOptions: CardDetailOptions
     showCard: (cardId?: string) => void
     showConfirmationDialog: (props: ConfirmationDialogBoxProps) => void
+    updateCardOptions: (options: CardDetailOptions) => void
     onClose: () => void
 }
 
 const CardActionsMenu = (props: Props): JSX.Element => {
-    const {board, activeView, card} = props
+    const {board, activeView, card, cardOptions} = props
     const intl = useIntl()
     const me = useAppSelector<IUser|null>(getMe)
     const isTemplate = card.fields.isTemplate
@@ -88,6 +91,25 @@ const CardActionsMenu = (props: Props): JSX.Element => {
     return (
         <>
             <Menu position="left">
+                <Menu.Switch
+                    id='titleVisible'
+                    name={intl.formatMessage({id: 'CardActionsMenu.titleVisible', defaultMessage: 'Title'})}
+                    onClick={() => props.updateCardOptions({...cardOptions, titleHidden: !cardOptions.titleHidden})}
+                    isOn={!cardOptions.titleHidden}
+                />
+                <Menu.Switch
+                    id='propertiesVisible'
+                    name={intl.formatMessage({id: 'CardActionsMenu.propertiesVisible', defaultMessage: 'Properties'})}
+                    onClick={() => props.updateCardOptions({...cardOptions, propertiesHidden: !cardOptions.propertiesHidden})}
+                    isOn={!cardOptions.propertiesHidden}
+                />
+                <Menu.Switch
+                    id='commentsVisible'
+                    name={intl.formatMessage({id: 'CardActionsMenu.commentsVisible', defaultMessage: 'Comments'})}
+                    onClick={() => props.updateCardOptions({...cardOptions, commentsHidden: !cardOptions.commentsHidden})}
+                    isOn={!cardOptions.commentsHidden}
+                />
+                <Menu.Separator/>
                 <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
                     <Menu.Text
                         id="delete"

@@ -1,7 +1,7 @@
 .CardPage {
     overflow: auto;
 
-    .content {
+    .content:not(:empty) {
         padding: 20px 15%;
     }
 

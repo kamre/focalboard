@@ -23,9 +23,10 @@ import {getMe} from '../store/users'
 import Dialog from './dialog'
 import CardContent from './cardContent'
 import CardActionsMenu from './cardActionsMenu'
+import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from './confirmationDialogBox'
+import {useCardDetailOptions} from './cardDetail/cardDetail'
 
 import './cardDialog.scss'
-import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from './confirmationDialogBox'
 
 type Props = {
     board: Board
@@ -49,6 +50,7 @@ const CardDialog = (props: Props): JSX.Element => {
     const isTemplate = card && card.fields.isTemplate
     const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false)
     const [confirmationDialogProps, setConfirmationDialogProps] = useState<ConfirmationDialogBoxProps>()
+    const [cardOptions, updateCardOptions] = useCardDetailOptions(board.id)
 
     const followActionButton = (following: boolean): React.ReactNode => {
         const followBtn = (
@@ -113,9 +115,11 @@ const CardDialog = (props: Props): JSX.Element => {
                         board={board}
                         activeView={activeView}
                         card={card}
+                        cardOptions={cardOptions}
                         showCard={props.showCard}
                         onClose={props.onClose}
                         showConfirmationDialog={showConfirmationDialog}
+                        updateCardOptions={updateCardOptions}
                     />
                 )}
                 toolbar={toolbar}
@@ -128,6 +132,7 @@ const CardDialog = (props: Props): JSX.Element => {
                     card={card}
                     contents={contents}
                     comments={comments}
+                    options={cardOptions}
                     readonly={props.readonly}
                     isTemplate={isTemplate}
                 />

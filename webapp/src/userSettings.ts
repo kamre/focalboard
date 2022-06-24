@@ -3,6 +3,7 @@
 
 import {notifySettingsChanged} from './nativeApp'
 import {Utils} from './utils'
+import {CardDetailOptions} from './components/cardDetail/cardDetail'
 
 // eslint-disable-next-line no-shadow
 export enum UserSettingKey {
@@ -11,6 +12,7 @@ export enum UserSettingKey {
     LastTeamId = 'lastTeamId',
     LastBoardId = 'lastBoardId',
     LastViewId = 'lastViewId',
+    BoardSettings = 'boardSettings',
     EmojiMartSkin = 'emoji-mart.skin',
     EmojiMartLast = 'emoji-mart.last',
     EmojiMartFrequently = 'emoji-mart.frequently',
@@ -18,6 +20,10 @@ export enum UserSettingKey {
     MobileWarningClosed = 'mobileWarningClosed',
     WelcomePageViewed = 'welcomePageViewed',
     HideCloudMessage = 'hideCloudMessage'
+}
+
+export type BoardSettings = {
+    cardOptions: CardDetailOptions
 }
 
 export class UserSettings {
@@ -117,6 +123,27 @@ export class UserSettings {
             data[boardID] = viewID
         }
         UserSettings.set(UserSettingKey.LastViewId, JSON.stringify(data))
+    }
+
+    static get boardSettings(): {[key: string]: BoardSettings} {
+        const data = UserSettings.get(UserSettingKey.BoardSettings) || '{}'
+        let mapping: {[key: string]: BoardSettings}
+        try {
+            mapping = JSON.parse(data)
+        } catch {
+            mapping = {}
+        }
+        return mapping
+    }
+
+    static setBoardSettings(boardId: string, settings: BoardSettings | null): void {
+        const data = this.boardSettings
+        if (settings === null) {
+            delete data[boardId]
+        } else {
+            data[boardId] = settings
+        }
+        UserSettings.set(UserSettingKey.BoardSettings, JSON.stringify(data))
     }
 
     static get prefillRandomIcons(): boolean {
