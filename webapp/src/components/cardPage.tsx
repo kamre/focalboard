@@ -116,18 +116,20 @@ const CardPage = (props: Props): JSX.Element => {
                 showConfirmationDialog={showDialog}
                 updateCardOptions={updateCardOptions}
             />
-            <CardContent
-                board={board}
-                activeView={activeView}
-                views={views}
-                cards={cards}
-                card={card}
-                comments={comments}
-                contents={contents}
-                options={cardOptions}
-                readonly={readonly}
-                isTemplate={isTemplate}
-            />
+            <div className='CardPageContent'>
+                <CardContent
+                    board={board}
+                    activeView={activeView}
+                    views={views}
+                    cards={cards}
+                    card={card}
+                    comments={comments}
+                    contents={contents}
+                    options={cardOptions}
+                    readonly={readonly}
+                    isTemplate={isTemplate}
+                />
+            </div>
             {dialogVisible && dialogProps &&
                 <RootPortal>
                     <ConfirmationDialogBox dialogBox={dialogProps}/>
