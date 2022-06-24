@@ -19,6 +19,7 @@ import Button from '../widgets/buttons/button'
 import {getUserBlockSubscriptionList} from '../store/initialLoad'
 import {IUser} from '../user'
 import {getMe} from '../store/users'
+import {UserSettings} from '../userSettings'
 
 import Dialog from './dialog'
 import CardContent from './cardContent'
@@ -80,6 +81,7 @@ const CardDialog = (props: Props): JSX.Element => {
             search: '?fullscreen'
         }
         history.push(newLocation)
+        UserSettings.setBoardSettings(board.id, {showFullscreenCard: true})
     }, [history])
 
     const followingCards = useAppSelector(getUserBlockSubscriptionList)
@@ -87,7 +89,7 @@ const CardDialog = (props: Props): JSX.Element => {
     const followButton = followActionButton(isFollowingCard)
     const toolbar = (
         <>
-            {!isTemplate && Utils.isFocalboardPlugin() && followButton}
+            {!isTemplate && Utils.isFocalboardPlugin() && !card?.limited && followButton}
             <IconButton
                 icon={<ArrowExpand/>}
                 size='medium'
@@ -101,7 +103,7 @@ const CardDialog = (props: Props): JSX.Element => {
             <Dialog
                 className='cardDialog'
                 onClose={props.onClose}
-                toolsMenu={!props.readonly && card && (
+                toolsMenu={!props.readonly && card && !card?.limited && (
                     <CardActionsMenu
                         board={board}
                         activeView={activeView}

@@ -12,6 +12,7 @@ import IconButton from '../widgets/buttons/iconButton'
 import ArrowCollapse from '../widgets/icons/arrowCollapse.'
 import OptionsIcon from '../widgets/icons/options'
 import MenuWrapper from '../widgets/menuWrapper'
+import {UserSettings} from '../userSettings'
 
 import CardContent from './cardContent'
 import CardActionsMenu from './cardActionsMenu'
@@ -43,6 +44,7 @@ const CardPageToolbar = (props: ToolbarProps): JSX.Element | null => {
             search: ''
         }
         history.push(newLocation)
+        UserSettings.setBoardSettings(board.id, {showFullscreenCard: false})
     }, [history])
 
     if (!card) return null

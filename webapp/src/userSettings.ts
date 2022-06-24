@@ -24,6 +24,7 @@ export enum UserSettingKey {
 
 export type BoardSettings = {
     cardOptions: CardDetailOptions
+    showFullscreenCard?: boolean
 }
 
 export class UserSettings {
@@ -136,13 +137,9 @@ export class UserSettings {
         return mapping
     }
 
-    static setBoardSettings(boardId: string, settings: BoardSettings | null): void {
+    static setBoardSettings(boardId: string, settings: Partial<BoardSettings>): void {
         const data = this.boardSettings
-        if (settings === null) {
-            delete data[boardId]
-        } else {
-            data[boardId] = settings
-        }
+        data[boardId] = {...data[boardId], ...settings}
         UserSettings.set(UserSettingKey.BoardSettings, JSON.stringify(data))
     }
 

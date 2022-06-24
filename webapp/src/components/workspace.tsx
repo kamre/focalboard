@@ -21,6 +21,7 @@ import {getClientConfig, setClientConfig} from '../store/clientConfig'
 import wsClient, {WSClient} from '../wsclient'
 import {ClientConfig} from '../config/clientConfig'
 import {Utils} from '../utils'
+import {UserSettings} from '../userSettings'
 
 import CenterPanel from './centerPanel'
 import BoardTemplateSelector from './boardTemplateSelector/boardTemplateSelector'
@@ -53,8 +54,16 @@ function CenterContent(props: Props) {
     const showCard = useCallback((cardId?: string) => {
         const params = {...match.params, cardId}
         let newPath = generatePath(match.path, params)
+        const searchParams = new URLSearchParams()
         if (props.readonly) {
-            newPath += `?r=${Utils.getReadToken()}`
+            searchParams.set('r', Utils.getReadToken())
+        }
+        if (board && UserSettings.boardSettings[board.id]?.showFullscreenCard) {
+            searchParams.set('fullscreen', '')
+        }
+        const searchParamsString = searchParams.toString()
+        if (searchParamsString) {
+            newPath += `?${searchParamsString}`
         }
         history.push(newPath)
         dispatch(setCurrentCard(cardId || ''))
