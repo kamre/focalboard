@@ -80,7 +80,7 @@ function CenterContent(props: Props) {
     }, [cardLimitTimestamp, match.params.boardId, templates])
 
     const query = useMemo(() => new URLSearchParams(history.location.search), [history.location])
-    if (match.params.cardId && query.has('fullscreen')) {
+    if (board && match.params.cardId && query.has('fullscreen')) {
         return (
             <CardPage
                 board={board}

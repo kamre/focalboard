@@ -1,6 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-import React, {useCallback, useState} from 'react'
+import React, {useCallback} from 'react'
 import {useIntl} from 'react-intl'
 import {useHistory} from 'react-router-dom'
 
@@ -23,7 +23,7 @@ import {getMe} from '../store/users'
 import Dialog from './dialog'
 import CardContent from './cardContent'
 import CardActionsMenu from './cardActionsMenu'
-import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from './confirmationDialogBox'
+import ConfirmationDialogBox, {useConfirmationDialogBox} from './confirmationDialogBox'
 import {useCardDetailOptions} from './cardDetail/cardDetail'
 
 import './cardDialog.scss'
@@ -48,9 +48,8 @@ const CardDialog = (props: Props): JSX.Element => {
     const history = useHistory()
     const me = useAppSelector<IUser|null>(getMe)
     const isTemplate = card && card.fields.isTemplate
-    const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false)
-    const [confirmationDialogProps, setConfirmationDialogProps] = useState<ConfirmationDialogBoxProps>()
     const [cardOptions, updateCardOptions] = useCardDetailOptions(board.id)
+    const [dialogVisible, dialogProps, showDialog] = useConfirmationDialogBox()
 
     const followActionButton = (following: boolean): React.ReactNode => {
         const followBtn = (
@@ -97,14 +96,6 @@ const CardDialog = (props: Props): JSX.Element => {
         </>
     )
 
-    const showConfirmationDialog = (dialogProps: ConfirmationDialogBoxProps) => {
-        setConfirmationDialogProps({
-            ...dialogProps,
-            onClose: () => setConfirmationDialogVisible(false)
-        })
-        setConfirmationDialogVisible(true)
-    }
-
     return (
         <>
             <Dialog
@@ -118,7 +109,7 @@ const CardDialog = (props: Props): JSX.Element => {
                         cardOptions={cardOptions}
                         showCard={props.showCard}
                         onClose={props.onClose}
-                        showConfirmationDialog={showConfirmationDialog}
+                        showConfirmationDialog={showDialog}
                         updateCardOptions={updateCardOptions}
                     />
                 )}
@@ -138,8 +129,8 @@ const CardDialog = (props: Props): JSX.Element => {
                 />
             </Dialog>
 
-            {confirmationDialogVisible && confirmationDialogProps &&
-                <ConfirmationDialogBox dialogBox={confirmationDialogProps}/>}
+            {dialogVisible && dialogProps &&
+                <ConfirmationDialogBox dialogBox={dialogProps}/>}
         </>
     )
 }

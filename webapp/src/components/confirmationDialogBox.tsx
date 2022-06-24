@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {ReactNode, useCallback} from 'react'
+import React, {ReactNode, useCallback, useState} from 'react'
 import {FormattedMessage} from 'react-intl'
 
 import Button from '../widgets/buttons/button'
@@ -15,6 +15,21 @@ type ConfirmationDialogBoxProps = {
     confirmButtonText?: string
     onConfirm: () => void
     onClose: () => void
+}
+
+export function useConfirmationDialogBox(): [boolean, ConfirmationDialogBoxProps | undefined, (props: ConfirmationDialogBoxProps) => void] {
+    const [dialogVisible, setDialogVisible] = useState(false)
+    const [dialogProps, setDialogProps] = useState<ConfirmationDialogBoxProps>()
+
+    const showDialog = useCallback((props: ConfirmationDialogBoxProps) => {
+        setDialogProps({
+            ...props,
+            onClose: () => setDialogVisible(false)
+        })
+        setDialogVisible(true)
+    }, [])
+
+    return [dialogVisible, dialogProps, showDialog]
 }
 
 type Props = {

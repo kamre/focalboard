@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback} from 'react'
 import {generatePath, Link, useHistory, useRouteMatch} from 'react-router-dom'
 
 import {Board} from '../blocks/board'
@@ -15,7 +15,7 @@ import MenuWrapper from '../widgets/menuWrapper'
 
 import CardContent from './cardContent'
 import CardActionsMenu from './cardActionsMenu'
-import ConfirmationDialogBox, {ConfirmationDialogBoxProps} from './confirmationDialogBox'
+import ConfirmationDialogBox, {ConfirmationDialogBoxProps, useConfirmationDialogBox} from './confirmationDialogBox'
 import RootPortal from './rootPortal'
 import {CardDetailOptions, useCardDetailOptions} from './cardDetail/cardDetail'
 
@@ -101,17 +101,8 @@ const CardPage = (props: Props): JSX.Element => {
     const contents = useAppSelector(getCardContents(cardId))
     const comments = useAppSelector(getCardComments(cardId))
     const isTemplate = card && card.fields.isTemplate
-    const [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false)
-    const [confirmationDialogProps, setConfirmationDialogProps] = useState<ConfirmationDialogBoxProps>()
     const [cardOptions, updateCardOptions] = useCardDetailOptions(board.id)
-
-    const showConfirmationDialog = (dialogProps: ConfirmationDialogBoxProps) => {
-        setConfirmationDialogProps({
-            ...dialogProps,
-            onClose: () => setConfirmationDialogVisible(false)
-        })
-        setConfirmationDialogVisible(true)
-    }
+    const [dialogVisible, dialogProps, showDialog] = useConfirmationDialogBox()
 
     return (
         <div className='CardPage'>
@@ -122,7 +113,7 @@ const CardPage = (props: Props): JSX.Element => {
                 cardOptions={cardOptions}
                 showCard={props.showCard}
                 onClose={props.onClose}
-                showConfirmationDialog={showConfirmationDialog}
+                showConfirmationDialog={showDialog}
                 updateCardOptions={updateCardOptions}
             />
             <CardContent
@@ -137,9 +128,9 @@ const CardPage = (props: Props): JSX.Element => {
                 readonly={readonly}
                 isTemplate={isTemplate}
             />
-            {confirmationDialogVisible && confirmationDialogProps &&
+            {dialogVisible && dialogProps &&
                 <RootPortal>
-                    <ConfirmationDialogBox dialogBox={confirmationDialogProps}/>
+                    <ConfirmationDialogBox dialogBox={dialogProps}/>
                 </RootPortal>}
         </div>
     )
