@@ -57,7 +57,7 @@ const CardPageToolbar = (props: ToolbarProps): JSX.Element | null => {
                 <Link to={generatePath(match.path, { boardId })}>
                     {`${board.icon} ${board.title}`}
                 </Link>
-                {` / ${card.title}`}
+                {` / ${card.fields.icon} ${card.title}`}
             </div>
             <div className='CardPageToolbar-RightSide'>
                 <IconButton
